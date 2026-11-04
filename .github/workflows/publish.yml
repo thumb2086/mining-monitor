@@ -33,13 +33,14 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}  # fallback for non-OIDC
 
-      # Optional: also create GitHub Release assets
+      # Optional: also create GitHub Release assets (only on release event)
       - name: Upload tarball as release asset
+        if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./mining-monitor-${{ github.event.release.tag_name.replace('v', '') }}.tgz
-          asset_name: mining-monitor-${{ github.event.release.tag_name.replace('v', '') }}.tgz
+          asset_path: ./mining-monitor-${{ github.event.release.tag_name }}.tgz
+          asset_name: mining-monitor-${{ github.event.release.tag_name }}.tgz
           asset_content_type: application/gzip
