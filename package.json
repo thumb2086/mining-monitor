@@ -1,0 +1,65 @@
+{
+  "name": "mining-monitor",
+  "version": "0.2.0",
+  "description": "Terminal dashboard for GPU mining rigs — hashrate, difficulty, blocks, shares, pool stats. Works with SRBMiner-MULTI / XMRig and unMineable.",
+  "keywords": [
+    "mining",
+    "monitor",
+    "tui",
+    "terminal",
+    "gpu",
+    "nvidia",
+    "srbminer",
+    "xmrig",
+    "unmineable",
+    "hashrate",
+    "pearlpow",
+    "etchash",
+    "dashboard",
+    "cli"
+  ],
+  "license": "MIT",
+  "author": "thumb2086",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thumb2086/mining-monitor.git"
+  },
+  "homepage": "https://github.com/thumb2086/mining-monitor#readme",
+  "bugs": {
+    "url": "https://github.com/thumb2086/mining-monitor/issues"
+  },
+  "type": "commonjs",
+  "main": "src/index.js",
+  "bin": {
+    "mining-monitor": "bin/mining-monitor.js",
+    "minmon": "bin/mining-monitor.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "tools",
+    "LICENSE",
+    "README.md",
+    "README.zh-TW.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node bin/mining-monitor.js",
+    "demo": "node bin/mining-monitor.js --demo",
+    "check": "node tools/check-layout.js",
+    "dump": "node bin/mining-monitor.js --dump",
+    "prepublishOnly": "npm run check"
+  },
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.11.0",
+    "drawille-canvas-blessed-contrib": "^0.1.3"
+  },
+  "os": [
+    "win32",
+    "linux",
+    "darwin"
+  ]
+}
