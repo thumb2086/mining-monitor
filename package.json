@@ -1,6 +1,6 @@
 {
   "name": "mining-monitor",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Terminal dashboard for GPU mining rigs — hashrate, difficulty, blocks, shares, pool stats. Works with SRBMiner-MULTI / XMRig and unMineable.",
   "keywords": [
     "mining",
