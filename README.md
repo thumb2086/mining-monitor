@@ -1,5 +1,10 @@
 # mining-monitor
 
+[![npm version](https://img.shields.io/npm/v/mining-monitor.svg)](https://www.npmjs.com/package/mining-monitor)
+[![npm downloads](https://img.shields.io/npm/dm/mining-monitor.svg)](https://www.npmjs.com/package/mining-monitor)
+[![license](https://img.shields.io/npm/l/mining-monitor.svg)](LICENSE)
+[![node](https://img.shields.io/node/v/mining-monitor.svg)](https://nodejs.org)
+
 [中文說明（繁體）→](README.zh-TW.md)
 
 Terminal dashboard (TUI) for GPU mining rigs. Shows:

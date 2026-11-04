@@ -1,5 +1,8 @@
 # mining-monitor — 挖礦監控 TUI（中文說明）
 
+[![npm version](https://img.shields.io/npm/v/mining-monitor.svg)](https://www.npmjs.com/package/mining-monitor)
+[![npm downloads](https://img.shields.io/npm/dm/mining-monitor.svg)](https://www.npmjs.com/package/mining-monitor)
+
 給 GPU 礦機用的終端機儀表板。即時顯示：
 
 - **算力（TH/s）** — 每張顯卡的即時算力、滾動折線圖
