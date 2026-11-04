@@ -21,8 +21,6 @@ jobs:
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
-          # Request OIDC token for npm
-          scope: '@thumb2086'  # optional, but helps with provenance
 
       - name: Install dependencies
         run: npm ci
@@ -30,8 +28,15 @@ jobs:
       - name: Run checks
         run: npm run check
 
+      - name: Configure npm with OIDC token
+        run: |
+          # Get OIDC token for npm registry
+          TOKEN=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=registry.npmjs.org" | jq -r .value)
+          npm config set //registry.npmjs.org/:_authToken "$TOKEN"
+        env:
+          ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${{ secrets.ACTIONS_ID_TOKEN_REQUEST_TOKEN }}
+          ACTIONS_ID_TOKEN_REQUEST_URL: ${{ secrets.ACTIONS_ID_TOKEN_REQUEST_URL }}
+
       - name: Publish to npm
         run: npm publish --access public --provenance
-        env:
-          # OIDC token automatically available via setup-node
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}  # fallback only
