@@ -30,8 +30,7 @@ jobs:
 
       - name: Publish to npm
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}  # fallback for non-OIDC
+        # OIDC token is automatically available via setup-node with registry-url
 
       # Optional: also create GitHub Release assets (only on release event)
       - name: Upload tarball as release asset
