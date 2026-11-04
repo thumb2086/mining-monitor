@@ -30,4 +30,7 @@ jobs:
         run: npm run check
 
       - name: Publish to npm
-        run: npm publish --access public --provenance
+        uses: npm/actions/npm-publish@v2
+        with:
+          access: public
+          provenance: true
