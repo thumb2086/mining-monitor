@@ -149,6 +149,13 @@ async function getCoinStats(creds, coin = "DOGE") {
   return json && json.success ? json.data : null;
 }
 
+/** All assets (coins) with balances and reward ratios. */
+async function getAssets(creds) {
+  const json = await unmineableFetch(creds, "GET", "/v1/assets");
+  if (!json || !json.success || !json.data || !json.data.list) return null;
+  return json.data.list.filter(a => a.is_active || (a.amount && parseFloat(a.amount) > 0));
+}
+
 /** Recent dashboard events (rewards, worker online/offline). */
 async function getEvents(creds, page = 1) {
   const json = await unmineableFetch(creds, "GET", "/v1/dashboard/events", `page=${page}`);
@@ -187,5 +194,6 @@ module.exports = {
   getWorkers,
   getCoinStats,
   getEvents,
+  getAssets,
   getPearlStatus,
 };

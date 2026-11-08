@@ -207,7 +207,7 @@ class Dashboard {
       keys: true,
       label: " Payout / Pearl network ",
       columnSpacing: 1,
-      columnWidth: [13, 16],
+      columnWidth: [13, 24],
       border: { fg: "yellow" },
     });
 
@@ -332,6 +332,9 @@ class Dashboard {
         `${miner.rigName || "?"} (v${miner.version || "?"})${miner.stale ? " stale" : ""}`,
       ]);
       rows.push(["Algorithm", miner.algorithm || "-"]);
+      // Coin being mined (derived from algorithm)
+      const minedCoin = this.algorithmToCoin(miner.algorithm);
+      if (minedCoin) rows.push(["Coin", minedCoin]);
       rows.push([
         "Share diff",
         miner.difficulty != null ? String(miner.difficulty) : "-",
@@ -356,20 +359,56 @@ class Dashboard {
     this.paint();
   }
 
+  // Map algorithm name to coin symbol
+  algorithmToCoin(algo) {
+    if (!algo) return null;
+    const a = algo.toLowerCase();
+    if (a.includes("pearl")) return "PRL (Pearl)";
+    if (a.includes("etchash")) return "ETC (Ethereum Classic)";
+    if (a.includes("randomx")) return "XMR (Monero)";
+    if (a.includes("kawpow")) return "RVN (Ravencoin)";
+    if (a.includes("octopus")) return "CFX (Conflux)";
+    if (a.includes("autolykos")) return "ERG (Ergo)";
+    if (a.includes("verushash")) return "VRSC (Verus)";
+    return algo.toUpperCase();
+  }
+
   // --- payout + network ----------------------------------------------------
   setRight(opts = {}) {
     this._lastRight = opts;
-    const { pool = {}, net = {} } = opts;
+    const { pool = {}, net = {}, events = null, assets = null, coin = "DOGE", algorithm = null } = opts;
     const rows = [];
     const num = (v, d = 4) => (v == null ? "-" : Number(v).toFixed(d));
+
+    // Coin type: mined coin (from algorithm) + payout coin
+    const minedCoin = this.algorithmToCoin(algorithm);
+    rows.push(["Mined", minedCoin || "—"]);
+    // Payout coins: show all active payout coins
+    const payoutCoins = (assets && Array.isArray(assets))
+      ? assets.filter(a => a.is_active && parseFloat(a.amount) >= 0).map(a => a.coin).join(" + ")
+      : coin.toUpperCase();
+    rows.push(["Payout", payoutCoins || coin.toUpperCase()]);
+
+    // Multi-coin balances (from unMineable assets)
+    // Only show coins that are actively mined (ratio > 0) or have meaningful balance (> 0.001)
+    if (assets && Array.isArray(assets) && assets.length > 0) {
+      for (const a of assets) {
+        const amt = parseFloat(a.amount || "0");
+        const ratio = parseFloat(a.reward_ratio || "0");
+        if (ratio > 0 || amt > 0.001) {
+          const ratioStr = ratio > 0 ? ` (${(ratio * 100).toFixed(0)}%)` : "";
+          rows.push([a.coin, `${amt.toFixed(4)} ${a.coin}${ratioStr}`]);
+        }
+      }
+    }
 
     const pct =
       pool.balance != null && pool.threshold
         ? ` ${((pool.balance / pool.threshold) * 100).toFixed(0)}%`
         : "";
-    rows.push(["Balance", `${num(pool.balance, 4)} DOGE${pct}`]);
-    rows.push(["24h Reward", `${num(pool.rewarded24h)} DOGE`]);
-    rows.push(["7d Reward", `${num(pool.rewarded7d)} DOGE`]);
+    rows.push(["Balance", `${num(pool.balance, 4)} ${coin.toUpperCase()}${pct}`]);
+    rows.push(["24h Reward", `${num(pool.rewarded24h)} ${coin.toUpperCase()}`]);
+    rows.push(["7d Reward", `${num(pool.rewarded7d)} ${coin.toUpperCase()}`]);
     rows.push([
       "Pearl Height",
       net.blockHeight != null ? String(net.blockHeight) : "-",
@@ -385,6 +424,24 @@ class Dashboard {
 
     this.rightBox.setData({ headers: ["Item", "Value"], data: rows });
     this.paint();
+
+    // Events panel: add reward events from unMineable
+    if (events && Array.isArray(events.events)) {
+      this.setEvents(events.events);
+    }
+  }
+
+  // Events from unMineable dashboard (rewards, worker online/offline)
+  setEvents(events) {
+    const rewardEvents = events
+      .filter((e) => e.type === "reward" && e.amount != null)
+      .slice(0, 8); // keep last 8 reward events
+    for (const e of rewardEvents) {
+      const time = e.timestamp ? new Date(e.timestamp * 1000).toLocaleTimeString() : clockLabel();
+      const coin = e.coin || "DOGE";
+      const amount = Number(e.amount).toFixed(6);
+      this.log.log(`{green-fg}[${time}]{/} +${amount} ${coin} reward`);
+    }
   }
 
   // --- charts --------------------------------------------------------------

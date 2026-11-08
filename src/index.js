@@ -10,6 +10,7 @@ const {
   getWorkers,
   getCoinStats,
   getEvents,
+  getAssets,
   getPearlStatus,
 } = require("./pool.js");
 const { Dashboard } = require("./ui.js");
@@ -263,6 +264,26 @@ async function main(argv) {
       }
       dash.setGpu(rows);
 
+      // --- Events (unMineable dashboard events: rewards, worker status) ---
+      let events = null;
+      let assets = null;
+      if (args.demo) {
+        events = {
+          events: [
+            { type: "reward", timestamp: Math.floor((Date.now() - 5 * 60 * 1000) / 1000), amount: 0.04654432, coin: args.coin },
+            { type: "reward", timestamp: Math.floor((Date.now() - 10 * 60 * 1000) / 1000), amount: 0.04623057, coin: args.coin },
+            { type: "reward", timestamp: Math.floor((Date.now() - 15 * 60 * 1000) / 1000), amount: 0.04673190, coin: args.coin },
+          ],
+        };
+        assets = [
+          { coin: args.coin, amount: "24.2804", reward_ratio: "0.9", is_active: true },
+          { coin: "LTC", amount: "0.0000", reward_ratio: "0.1", is_active: true },
+        ];
+      } else if (creds) {
+        events = await getEvents(creds, 1);
+        assets = await getAssets(creds);
+      }
+
       // --- Stats panels -------------------------------------------------------
       if (miner) {
         dash.setMiner(miner);
@@ -350,6 +371,10 @@ async function main(argv) {
           difficulty: pearl ? pearl.difficulty : null,
           sessionBlocks,
         },
+        events,
+        assets,
+        coin: args.coin,
+        algorithm: miner ? miner.algorithm : null,
       });
     } catch (err) {
       dash.logLine(`{red-fg}error:{/} ${err && err.message ? err.message : err}`);
