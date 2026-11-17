@@ -17,7 +17,7 @@ const blessed = require("blessed");
 const contrib = require("blessed-contrib");
 const { Canvas: InnerCanvas } = require("drawille-canvas-blessed-contrib");
 
-const GRID_ROWS = 16;
+const GRID_ROWS = 12;
 const GRID_COLS = 12;
 
 /** HH:MM:SS in 24h — the locale string (下午1:57:21) is too wide for an axis. */
@@ -157,8 +157,8 @@ class Dashboard {
       screen: this.screen,
     });
 
-    // --- row 0-4 ------------------------------------------------------------
-    this.gpuTable = this.grid.set(0, 0, 5, 6, contrib.table, {
+    // --- row 0-3 ------------------------------------------------------------
+    this.gpuTable = this.grid.set(0, 0, 4, 6, contrib.table, {
       keys: true,
       label: " GPUs ",
       columnSpacing: 1,
@@ -166,16 +166,16 @@ class Dashboard {
       border: { fg: "cyan" },
     });
 
-    this.minerBox = this.grid.set(0, 6, 5, 6, contrib.table, {
+    this.minerBox = this.grid.set(0, 6, 4, 6, contrib.table, {
       keys: true,
       label: " Miner ",
       columnSpacing: 1,
-      columnWidth: [14, 30],
+      columnWidth: [14, 24],
       border: { fg: "magenta" },
     });
 
-    // --- rows 5-8: hashrate ------------------------------------------------
-    this.chart = this.grid.set(5, 0, 4, GRID_COLS, contrib.line, {
+    // --- rows 4-6: hashrate ------------------------------------------------
+    this.chart = this.grid.set(4, 0, 3, GRID_COLS, contrib.line, {
       label: " Hashrate (TH/s) ",
       showLegend: false,
       wholeNumbersOnly: false,
@@ -185,8 +185,8 @@ class Dashboard {
       border: { fg: "green" },
     });
 
-    // --- rows 9-11: difficulty --------------------------------------------
-    this.diffChart = this.grid.set(9, 0, 3, GRID_COLS, contrib.line, {
+    // --- rows 7-8: difficulty --------------------------------------------
+    this.diffChart = this.grid.set(7, 0, 2, GRID_COLS, contrib.line, {
       label: " Difficulty (M) ",
       showLegend: false,
       wholeNumbersOnly: false,
@@ -196,14 +196,14 @@ class Dashboard {
       border: { fg: "yellow" },
     });
 
-    // --- rows 12-15 ---------------------------------------------------------
-    this.log = this.grid.set(12, 0, 4, 7, contrib.log, {
+    // --- rows 9-11 ---------------------------------------------------------
+    this.log = this.grid.set(9, 0, 3, 7, contrib.log, {
       label: " Events ",
       tags: true,
       border: { fg: "grey" },
     });
 
-    this.rightBox = this.grid.set(12, 7, 4, 5, contrib.table, {
+    this.rightBox = this.grid.set(9, 7, 3, 5, contrib.table, {
       keys: true,
       label: " Payout / Pearl network ",
       columnSpacing: 1,
